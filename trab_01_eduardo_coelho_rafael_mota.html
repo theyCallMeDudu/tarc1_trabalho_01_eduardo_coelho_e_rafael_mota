@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trabalho 01 - TARC 1 - Eduardo Coelho e Rafael Mota - Mousemove Shadow</title>
+</head>
+<body>
+
+  <div class="conteudo">
+    <!-- 
+        Atributo contenteditable
+        permite que o usuário
+        edite o conteúdo da página
+    -->
+    <h1 contenteditable>TARC 1!</h1>
+  </div>
+
+  <style>
+  html {
+    color: black;
+    font-family: sans-serif;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .conteudo {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+  }
+
+  h1 {
+    text-shadow: 10px 10px 0 rgba(0,0,0,1);
+    font-size: 100px;
+  }
+  </style>
+
+<script>
+  // document.querySelector para pegar o conteúdo que utiliza a classe passada
+  const conteudo = document.querySelector('.conteudo');
+  const text = conteudo.querySelector('h1');
+  
+  // Variável que diz quanto a sombra pode se mover.
+  const walk = 100; // 100px
+
+  // Função que faz a sombra se mover na tela
+  function shadow(e) {
+    /*
+      offsetParent retorna uma referência ao objeto ao qual está contido (mais próximo na hierarquia do conteúdo) 
+      posicionado contendo o elemento. Caso o elemento não esteja posicionado, 
+      mais próximo a célula da tabela ou do elemento raiz (nos padrões do modo de conformidade do html; 
+      no modo quirks de redenrização) é o offsetParent. 
+      Quando o elemento está definido style.display para "none", offsetParent retorna null. 
+      A propriedade offsetParent é útil devido a offsetTop e offsetLeft serem relativos ao seu preenchimento da borda.
+
+      Event.target é uma referência ao objeto que enviou o evento. 
+    */
+
+    /*
+      offsetWidth retorna a largura de um elemento incluindo 
+      padding-top + padding-bottom + border-top + border-bottom.
+      
+      offsetHeight retorna a altura de um elemento incluindo 
+      padding-top + padding-bottom + border-top + border-bottom.
+    */
+    const width = this.offsetWidth;
+    const height = this.offsetHeight;
+
+    /*
+      offsetX retorna a coordenada x do cursor do mouse, em relação ao elemento de destino.
+      
+      offsetY retorna a coordenada y do cursor do mouse, em relação ao elemento de destino.
+    */
+      let x = e.offsetX;
+      let y = e.offsetY;
+      //console.log(x,y)
+
+
+
+      /* Precisamos alterar as variáveis x e y porque elas são definidas com o valor 0 no canto superior esquerdo
+         de (div conteudo) e queremos definir o valor no canto superior esquerdo do texto.
+         Então precisamos verificar se o this (div conteudo) é diferente do e.target, se for precisamos atualizar
+         essas variáveis para definir o valor 0 no lugar correto. */
+    if (this !== e.target) {
+      /*
+        offsetLeft retorna a medida, em pixels, exata do local onde está o evento  
+        Retorna a distância do elemento atual em relação ao canto superior esquerdo do offsetParent.
+      */
+      x = x + e.target.offsetLeft;
+
+      /*
+        offsetTop retorna a medida, em pixels, exata do local onde está o evento
+        Retorna a distância do elemento atual em relação ao topo do offsetParent.
+      */
+      y = y + e.target.offsetTop;
+
+      /* offset é a propriedade da interface MouseEvent que fornece o deslocamento
+      na coordenada X ou Y do ponteiro do mouse entre esse evento e a borda de
+      preenchimento do nó de destino. */
+    }
+
+
+
+    /*
+      Depois disso, adicionamos duas novas variáveis que conterão a matemática 
+      para fazer a sombra se mover no lugar correto.
+      Se a sombra caminha 100, temos que lembrar que ela caminha 50 do ponto zero 
+      para o canto superior esquerdo e 50 para o canto inferior direito.
+      Então precisamos dividir a caminhada em dois e subtrair à matemática feita 
+      com o pixel de ponto 0 onde ela começa dividido pela altura e largura do conteudo mais a caminhada.
+      Isso fornecerá o pixel exato movido da sombra para todas as direções na tela até 100/2 = 50.
+    */
+    const xWalk = Math.round((x / width * walk) - (walk / 2));
+    const yWalk = Math.round((y / height * walk) - (walk / 2));
+
+    /*
+      Depois disso, precisamos estilizar a sombra do texto da variável com os valores de xWalk e yWalk
+    */
+    text.style.textShadow = `
+    ${xWalk}px ${yWalk}px  rgba(0,255,0,0.7)`; // a propriedade do DOM textShadow define efeito de sombra para o texto.
+
+  }
+
+  /*
+    addEventListener() registra uma única espera de evento em um único alvo.
+    ele aguarda que o evento aconteça para chamar a função passada como parâmetro,
+    no caso, shadow
+  */
+  conteudo.addEventListener('mousemove', shadow);
+</script>
+</body>
+</html>
